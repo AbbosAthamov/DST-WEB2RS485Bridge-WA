@@ -1,13 +1,20 @@
-import { Controller, Post, Req } from '@nestjs/common'
+import { Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
+import * as moment from 'moment'
 
 @Controller('power')
 export class PowerController {
   constructor(private readonly powerService: PowerService) {}
 
+  @Get()
+  async getStatusGet(@Req() req): Promise<object> {
+    console.log(moment().utcOffset('+0500'), req.method, req.ip, req.query)
+    return this.powerService.getStatus()
+  }
+
   @Post()
-  getStatus(@Req() req): object {
-    console.log(req.method, req.ip, req.query)
+  async getStatusPost(@Req() req): Promise<object> {
+    console.log(moment().utcOffset('+0500'), req.method, req.ip, req.query)
     return this.powerService.getStatus()
   }
 }
