@@ -9,7 +9,7 @@ export class PowerService {
 
   async getStatus(): Promise<object> {
     const num = randomRange(0, 100)
-    if (num > 30) return { status: 'OFF' }
+    if (num > 50) return { status: 'OFF' }
     await this.delay(10_000)
 
     return { status: 'ON' }

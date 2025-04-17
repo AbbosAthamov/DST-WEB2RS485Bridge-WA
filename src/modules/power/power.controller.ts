@@ -1,11 +1,11 @@
-import { Controller, Get } from '@nestjs/common'
+import { Controller, Post } from '@nestjs/common'
 import { PowerService } from './power.service'
 
 @Controller('power')
 export class PowerController {
   constructor(private readonly powerService: PowerService) {}
 
-  @Get()
+  @Post()
   getStatus(): object {
     return this.powerService.getStatus()
   }
