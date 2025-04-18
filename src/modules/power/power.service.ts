@@ -13,10 +13,17 @@ export class PowerService {
       await this.delay(10_000)
       return { status: 'ON' }
     } else if (num > 10) {
-      await this.delay(num * 50)
+      await this.delay(num * 100)
       return { status: num > 55 ? 'ON' : 'OFF' }
     }
 
     return { status: num > 5 ? 'ON' : 'OFF' }
+  }
+
+  async getStatusAlwaysLong(): Promise<object> {
+    const num = randomRange(1, 100)
+    await this.delay(60_000)
+
+    return { status: num > 50 ? 'ON' : 'OFF' }
   }
 }
