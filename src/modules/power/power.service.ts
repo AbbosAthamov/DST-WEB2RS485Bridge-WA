@@ -17,6 +17,12 @@ export class PowerService {
     await this.powerRepository.save(entity)
   }
 
+  async getAll(): Promise<Power[]> {
+    return this.powerRepository.find({
+      order: { id: 'DESC' },
+    })
+  }
+
   private async delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
