@@ -24,10 +24,18 @@ export class PowerController {
     return this.powerService.getStatus()
   }
 
+  @Get('/getdb')
+  async getAllFromDb(@Req() req): Promise<object> {
+    console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip)
+    const data = await this.powerService.getAll()
+    return { count: data.length, data }
+  }
+
   @Post()
   async getStatusPost(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
-    console.log("Input data:", req.body)
+    const { val } = req.body
+    await this.powerService.saveValue(val, req.ip)
     return this.powerService.getStatus()
   }
 }

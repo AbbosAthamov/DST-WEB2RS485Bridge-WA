@@ -1,8 +1,22 @@
 import { Injectable } from '@nestjs/common'
 import randomRange from '../../common/utils/randomRange'
+import { InjectRepository } from '@nestjs/typeorm'
+import { Repository } from 'typeorm'
+import { Power } from './power.entity'
 
 @Injectable()
 export class PowerService {
+
+  constructor(
+    @InjectRepository(Power)
+    private powerRepository: Repository<Power>,
+  ) {}
+
+  async saveValue(val: number, ip: string): Promise<void> {
+    const entity = this.powerRepository.create({ val, ip })
+    await this.powerRepository.save(entity)
+  }
+
   private async delay(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms))
   }
