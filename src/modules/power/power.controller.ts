@@ -27,6 +27,7 @@ export class PowerController {
   @Post()
   async getStatusPost(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
+    console.log("Input data:", req.body)
     return this.powerService.getStatus()
   }
 }
