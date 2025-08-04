@@ -5,22 +5,22 @@ export class Power {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out1: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out2: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out3: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out4: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out5: number
 
-  @Column()
+  @Column({ type: 'int', nullable: false })
   out6: number
 
   @Column()
