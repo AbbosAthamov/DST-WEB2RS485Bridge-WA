@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Toggle Control Panel</title>
+  <style>
+    .toggle {
+      display: inline-block;
+      margin: 10px;
+    }
+    .active {
+      background-color: lightgreen;
+    }
+  </style>
+</head>
+<body>
+  <h1>Control Panel</h1>
+  <div id="toggles">
+    <button class="toggle" id="out1" onclick="toggle(1)">OUT 1</button>
+    <button class="toggle" id="out2" onclick="toggle(2)">OUT 2</button>
+    <button class="toggle" id="out3" onclick="toggle(3)">OUT 3</button>
+    <button class="toggle" id="out4" onclick="toggle(4)">OUT 4</button>
+    <button class="toggle" id="out5" onclick="toggle(5)">OUT 5</button>
+    <button class="toggle" id="out6" onclick="toggle(6)">OUT 6</button>
+  </div>
+
+  <script>
+    const state = {
+      out1: 0,
+      out2: 0,
+      out3: 0,
+      out4: 0,
+      out5: 0,
+      out6: 0
+    }
+
+    function toggle(index) {
+      const key = `out${index}`
+      const button = document.getElementById(key)
+
+      state[key] = state[key] === 0 ? 1 : 0
+      button.classList.toggle('active', state[key] === 1)
+
+      fetch('http://94.158.53.18:4480/power', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ [key]: state[key] }) // 👈 УБРАЛ `val: { ... }`
+      })
+      .then(response => response.text())
+      .then(data => {
+        console.log(`Success for ${key}:`, data)
+      })
+      .catch(error => {
+        console.error(`Error for ${key}:`, error)
+      })
+    }
+  </script>
+</body>
+</html>
