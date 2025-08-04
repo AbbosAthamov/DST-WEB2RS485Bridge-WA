@@ -1,5 +1,6 @@
 import { Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
+import { Power } from './power.entity'
 import * as moment from 'moment'
 
 @Controller('/power')
@@ -33,9 +34,20 @@ export class PowerController {
 
   @Post()
   async getStatusPost(@Req() req): Promise<object> {
-    console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
-    const { inputs } = req.body
-    await this.powerService.saveValue(inputs, req.ip)
+    const data: Partial<Power> = {
+      ip: req.ip,
+    }
+
+    for (let channel = 1; channel <= 6; channel++) {
+      const key = `out${channel}`
+      if (typeof req.body[key] !== 'undefined') {
+        data[key] = req.body[key]
+      }
+    }
+
+    await this.powerService.saveOutpusts(data)
     return this.powerService.getStatus()
-  }
+}
+
+
 }

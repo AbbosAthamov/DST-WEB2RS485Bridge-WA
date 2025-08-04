@@ -12,10 +12,11 @@ export class PowerService {
     private powerRepository: Repository<Power>,
   ) {}
 
-  async saveValue(val: number, ip: string): Promise<void> {
-    const entity = this.powerRepository.create({ val, ip })
+  async saveOutpusts(data: Partial<Power>): Promise<void> {
+    const entity = this.powerRepository.create(data)
     await this.powerRepository.save(entity)
   }
+
 
   async getAll(): Promise<Power[]> {
     return this.powerRepository.find({
