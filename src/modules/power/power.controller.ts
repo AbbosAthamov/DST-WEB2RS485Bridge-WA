@@ -1,4 +1,4 @@
-import { ConsoleLogger, Controller, Get, Post, Req } from '@nestjs/common'
+import { Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
 import { Power } from './power.entity'
 import * as moment from 'moment'
@@ -39,16 +39,17 @@ export class PowerController {
       ip: req.ip,
     }
 
-    for (let channel = 1; channel <= 6; channel++) {
-      const key = `out${channel}`
-      if (typeof req.body[key] !== 'undefined') {
-        data[key] = req.body[key]
+    const outputPorts = req.body.OutputPorts
+    if (outputPorts && typeof outputPorts === 'object') {
+      for (let i = 1; i <= 6; i++) {
+        const value = outputPorts[String(i)]
+        if (typeof value !== 'undefined') {
+          data[`out${i}`] = value
+        }
       }
     }
 
     await this.powerService.saveOutpusts(data)
     return this.powerService.getStatus()
-}
-
-
+  }
 }

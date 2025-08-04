@@ -7,6 +7,7 @@
     .toggle {
       display: inline-block;
       margin: 10px;
+      padding: 10px 20px;
     }
     .active {
       background-color: lightgreen;
@@ -25,36 +26,36 @@
   </div>
 
   <script>
-    const state = {
-      out1: 0,
-      out2: 0,
-      out3: 0,
-      out4: 0,
-      out5: 0,
-      out6: 0
-    }
+    const outputPorts = {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    };
 
     function toggle(index) {
-      const key = `out${index}`
-      const button = document.getElementById(key)
+      const key = String(index);
+      const button = document.getElementById(`out${key}`);
 
-      state[key] = state[key] === 0 ? 1 : 0
-      button.classList.toggle('active', state[key] === 1)
+      outputPorts[key] = outputPorts[key] === 0 ? 1 : 0;
+      button.classList.toggle('active', outputPorts[key] === 1);
 
       fetch('http://94.158.53.18:4480/power', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ [key]: state[key] }) // 👈 УБРАЛ `val: { ... }`
+        body: JSON.stringify({ OutputPorts: outputPorts })
       })
       .then(response => response.text())
       .then(data => {
-        console.log(`Success for ${key}:`, data)
+        console.log(`Success:`, data);
       })
       .catch(error => {
-        console.error(`Error for ${key}:`, error)
-      })
+        console.error(`Error:`, error);
+      });
     }
   </script>
 </body>
