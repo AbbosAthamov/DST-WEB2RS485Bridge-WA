@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req } from '@nestjs/common'
+import { ConsoleLogger, Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
 import { Power } from './power.entity'
 import * as moment from 'moment'
@@ -34,6 +34,7 @@ export class PowerController {
 
   @Post()
   async getStatusPost(@Req() req): Promise<object> {
+    console.log(req.body)
     const data: Partial<Power> = {
       ip: req.ip,
     }
