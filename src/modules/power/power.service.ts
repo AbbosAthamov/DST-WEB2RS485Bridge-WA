@@ -18,24 +18,26 @@ export class PowerService {
   }
 
   async getLatestPorts(): Promise<object> {
-    const latest = await this.powerRepository.findOne({
-      order: { id: 'DESC' },
-    })
+  const [latest] = await this.powerRepository.find({
+    order: { id: 'DESC' },
+    take: 1,
+  })
 
-    if (!latest) return { OutputPorts: {} }
+  if (!latest) return { OutputPorts: {} }
 
-    const OutputPorts: Record<string, number> = {}
+  const OutputPorts: Record<string, number> = {}
 
-    for (let i = 1; i <= 6; i++) {
-      const key = `out${i}` as keyof Power
-      const value = latest[key]
-      if (typeof value === 'number') {
-        OutputPorts[String(i)] = value
-      }
+  for (let i = 1; i <= 6; i++) {
+    const key = `out${i}` as keyof Power
+    const value = latest[key]
+    if (typeof value === 'number') {
+      OutputPorts[String(i)] = value
     }
-
-    return { OutputPorts }
   }
+
+  return { OutputPorts }
+}
+
 
   async getAll(): Promise<Power[]> {
     return this.powerRepository.find({
