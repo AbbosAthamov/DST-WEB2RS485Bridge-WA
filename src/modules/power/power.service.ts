@@ -17,6 +17,25 @@ export class PowerService {
     await this.powerRepository.save(entity)
   }
 
+  async getLatestPorts(): Promise<object> {
+    const latest = await this.powerRepository.findOne({
+      order: { id: 'DESC' },
+    })
+
+    if (!latest) return { OutputPorts: {} }
+
+    const OutputPorts: Record<string, number> = {}
+
+    for (let i = 1; i <= 6; i++) {
+      const key = `out${i}` as keyof Power
+      const value = latest[key]
+      if (typeof value === 'number') {
+        OutputPorts[String(i)] = value
+      }
+    }
+
+    return { OutputPorts }
+  }
 
   async getAll(): Promise<Power[]> {
     return this.powerRepository.find({

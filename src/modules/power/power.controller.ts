@@ -32,6 +32,12 @@ export class PowerController {
     return { count: data.length, data }
   }
 
+  @Get('ports')
+  async getLatestPorts() {
+    return this.powerService.getLatestPorts();
+  }
+
+
   @Post()
   async getStatusPost(@Req() req): Promise<object> {
     console.log(req.body)
