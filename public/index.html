@@ -65,7 +65,7 @@
       outputPorts[key] = outputPorts[key] === 0 ? 1 : 0;
       button.classList.toggle('active', outputPorts[key] === 1);
 
-      fetch('http://94.158.53.18:4480/outputs', {
+      fetch('http://94.158.53.18:4480/power/outputs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
