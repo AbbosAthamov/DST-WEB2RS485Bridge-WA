@@ -44,7 +44,7 @@ export class PowerController {
   @Get('/inputs')
   async getLatestInputs(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip)
-    return this.powerService.getLatestOutputs()
+    return this.powerService.getLatestInputs()
   }
 
   @Post('/outputs')
@@ -77,10 +77,10 @@ export class PowerController {
       ip: req.ip,
     }
 
-    const outputPorts = req.body.OutputPorts
-    if (outputPorts && typeof outputPorts === 'object') {
+    const inputPorts = req.body.InputPorts
+    if (inputPorts && typeof inputPorts === 'object') {
       for (let i = 1; i <= 6; i++) {
-        const value = outputPorts[String(i)]
+        const value = inputPorts[String(i)]
         if (typeof value !== 'undefined') {
           data[`in${i}`] = value
         }
