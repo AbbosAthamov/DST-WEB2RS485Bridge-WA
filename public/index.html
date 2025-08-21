@@ -49,64 +49,61 @@
   </div>
 
   <script>
-    const outputPorts = {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0,
-      "5": 0,
-      "6": 0
-    };
+    let outputPorts = {}
 
+    // === Переключение кнопок ===
     function toggle(index) {
-      const key = String(index);
-      const button = document.getElementById(`out${key}`);
+      const key = String(index)
+      const button = document.getElementById(`out${key}`)
 
-      outputPorts[key] = outputPorts[key] === 0 ? 1 : 0;
-      button.classList.toggle('active', outputPorts[key] === 1);
+      outputPorts[key] = outputPorts[key] === 1 ? 0 : 1
+      button.classList.toggle('active', outputPorts[key] === 1)
 
       fetch('http://94.158.53.18:4480/power/outputs', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ OutputPorts: outputPorts })
       })
-      .then(response => response.text())
-      .then(data => {
-        console.log(`Success:`, data);
-      })
-      .catch(error => {
-        console.error(`Error:`, error);
-      });
+      .then(res => res.json())
+      .then(data => console.log('POST success:', data))
+      .catch(err => console.error('POST error:', err))
     }
 
-    function updateInputsFromServer() {
+    // === Получаем inputs с сервера ===
+    function updateInputs() {
       fetch('http://94.158.53.18:4480/power/inputs')
         .then(res => res.json())
         .then(data => {
-          const inputs = data.InputPorts || {};
-          const outputs = data.OutputPorts || {};
-
-          // Обновление входов
+          const inputs = data.InputPorts || {}
           for (let i = 1; i <= 6; i++) {
-            const indicator = document.getElementById(`in${i}`);
-            const value = inputs[String(i)];
-            indicator.classList.toggle('active', value === 1);
-          }
-
-          // Обновление кнопок по факту (если кто-то другой изменил Output)
-          for (let i = 1; i <= 6; i++) {
-            const button = document.getElementById(`out${i}`);
-            const value = outputs[String(i)];
-            outputPorts[String(i)] = value;
-            button.classList.toggle('active', value === 1);
+            const indicator = document.getElementById(`in${i}`)
+            const value = inputs[String(i)]
+            indicator.classList.toggle('active', value === 1)
           }
         })
-        .catch(err => console.error('Failed to fetch input states:', err));
+        .catch(err => console.error('Inputs fetch error:', err))
     }
 
-    setInterval(updateInputsFromServer, 1000); // обновление каждую секунду
+    // === Получаем outputs с сервера ===
+    function updateOutputs() {
+      fetch('http://94.158.53.18:4480/power/outputs')
+        .then(res => res.json())
+        .then(data => {
+          outputPorts = data.OutputPorts || {}
+          for (let i = 1; i <= 6; i++) {
+            const button = document.getElementById(`out${i}`)
+            const value = outputPorts[String(i)]
+            button.classList.toggle('active', value === 1)
+          }
+        })
+        .catch(err => console.error('Outputs fetch error:', err))
+    }
+
+    // === Стартуем синхронизацию ===
+    updateInputs()
+    updateOutputs()
+    setInterval(updateInputs, 1000)
+    setInterval(updateOutputs, 2000)
   </script>
 </body>
 </html>
