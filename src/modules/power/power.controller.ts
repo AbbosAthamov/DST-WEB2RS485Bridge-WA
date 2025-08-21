@@ -2,6 +2,7 @@ import { Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
 import { Power } from './power.entity'
 import * as moment from 'moment'
+import { Stats } from 'fs'
 
 @Controller('/power')
 export class PowerController {
@@ -13,27 +14,7 @@ export class PowerController {
     return this.powerService.getStatus()
   }
 
-  @Post()
-  async postStatus(@Req() req): Promise<object> {
-    console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
-
-    const data: Partial<Power> = {
-      ip: req.ip,
-    }
-
-    const outputPorts = req.body.OutputPorts
-    if (outputPorts && typeof outputPorts === 'object') {
-      for (let i = 1; i <= 6; i++) {
-        const value = outputPorts[String(i)]
-        if (typeof value !== 'undefined') {
-          data[`out${i}`] = value
-        }
-      }
-    }
-
-    await this.powerService.saveOutpusts(data)
-    return this.powerService.getStatus()
-  }
+  
 
   @Get('/always-long')
   async getStatusAlwaysLong(@Req() req): Promise<object> {
@@ -54,14 +35,20 @@ export class PowerController {
     return { count: data.length, data }
   }
 
-  @Get('/ports')
+  @Get('/outputs')
   async getLatestPorts(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip)
-    return this.powerService.getLatestPorts()
+    return this.powerService.getLatestOutputs()
   }
 
-  @Post('/ports')
-  async postLatestPorts(@Req() req): Promise<object> {
+  @Get('/inputs')
+  async getLatestInputs(@Req() req): Promise<object> {
+    console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip)
+    return this.powerService.getLatestOutputs()
+  }
+
+  @Post('/outputs')
+  async postOutputs(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
 
     const data: Partial<Power> = {
@@ -79,6 +66,28 @@ export class PowerController {
     }
 
     await this.powerService.saveOutpusts(data)
-    return this.powerService.getLatestPorts()
+    return { status: 'OK' }
+  }
+
+  @Post('/inputs')
+  async postInputs(@Req() req): Promise<object> {
+    console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
+
+    const data: Partial<Power> = {
+      ip: req.ip,
+    }
+
+    const outputPorts = req.body.OutputPorts
+    if (outputPorts && typeof outputPorts === 'object') {
+      for (let i = 1; i <= 6; i++) {
+        const value = outputPorts[String(i)]
+        if (typeof value !== 'undefined') {
+          data[`in${i}`] = value
+        }
+      }
+    }
+
+    await this.powerService.saveInputs(data)
+    return { status: 'OK' }
   }
 }

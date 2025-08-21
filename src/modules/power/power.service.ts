@@ -12,12 +12,38 @@ export class PowerService {
     private powerRepository: Repository<Power>,
   ) {}
 
+  async saveInputs(data: Partial<Power>): Promise<void> {
+    const entity = this.powerRepository.create(data)
+    await this.powerRepository.save(entity)
+  }
+
+  async getLatestInputs(): Promise<object> {
+    const [latest] = await this.powerRepository.find({
+      order: { id: 'DESC' },
+      take: 1,
+    })
+
+    if (!latest) return { InputPorts: {} }
+
+    const InputPorts: Record<string, number> = {}
+
+    for (let i = 1; i <= 6; i++) {
+      const key = `in${i}` as keyof Power
+      const value = latest[key]
+      if (typeof value === 'number') {
+        InputPorts[String(i)] = value
+      }
+    }
+
+    return { InputPorts }
+  }
+
   async saveOutpusts(data: Partial<Power>): Promise<void> {
     const entity = this.powerRepository.create(data)
     await this.powerRepository.save(entity)
   }
 
-  async getLatestPorts(): Promise<object> {
+  async getLatestOutputs(): Promise<object> {
     const [latest] = await this.powerRepository.find({
       order: { id: 'DESC' },
       take: 1,
