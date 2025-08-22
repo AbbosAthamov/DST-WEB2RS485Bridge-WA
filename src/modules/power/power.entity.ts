@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm'
 
 @Entity()
-export class Power {
+export class Output {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -22,6 +22,18 @@ export class Power {
 
   @Column({ type: 'int', nullable: false, default: 0 })
   out6: number
+
+  @Column()
+  ip: string
+
+  @CreateDateColumn()
+  createdAt: Date
+}
+
+@Entity()
+export class Input {
+  @PrimaryGeneratedColumn()
+  id: number
 
   @Column({ type: 'int', nullable: false, default: 0 })
   in1: number

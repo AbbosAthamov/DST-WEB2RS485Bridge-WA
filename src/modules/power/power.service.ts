@@ -2,23 +2,28 @@ import { Injectable } from '@nestjs/common'
 import randomRange from '../../common/utils/randomRange'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
-import { Power } from './power.entity'
+import { Output } from './power.entity'
+import { Input } from './power.entity'
 
 @Injectable()
 export class PowerService {
 
   constructor(
-    @InjectRepository(Power)
-    private powerRepository: Repository<Power>,
+    @InjectRepository(Output)
+    private outputRepository: Repository<Output>,
+
+    @InjectRepository(Input)
+    private inputRepository: Repository<Input>,
   ) {}
 
-  async saveInputs(data: Partial<Power>): Promise<void> {
-    const entity = this.powerRepository.create(data)
-    await this.powerRepository.save(entity)
+
+  async saveInputs(data: Partial<Input>): Promise<void> {
+    const entity = this.inputRepository.create(data)
+    await this.inputRepository.save(entity)
   }
 
   async getLatestInputs(): Promise<object> {
-    const [latest] = await this.powerRepository.find({
+    const [latest] = await this.inputRepository.find({
       order: { id: 'DESC' },
       take: 1,
     })
@@ -28,7 +33,7 @@ export class PowerService {
     const InputPorts: Record<string, number> = {}
 
     for (let i = 1; i <= 6; i++) {
-      const key = `in${i}` as keyof Power
+      const key = `in${i}` as keyof Input
       const value = latest[key]
       if (typeof value === 'number') {
         InputPorts[String(i)] = value
@@ -38,13 +43,13 @@ export class PowerService {
     return { InputPorts }
   }
 
-  async saveOutpusts(data: Partial<Power>): Promise<void> {
-    const entity = this.powerRepository.create(data)
-    await this.powerRepository.save(entity)
+  async saveOutpusts(data: Partial<Output>): Promise<void> {
+    const entity = this.outputRepository.create(data)
+    await this.outputRepository.save(entity)
   }
 
   async getLatestOutputs(): Promise<object> {
-    const [latest] = await this.powerRepository.find({
+    const [latest] = await this.outputRepository.find({
       order: { id: 'DESC' },
       take: 1,
     })
@@ -54,7 +59,7 @@ export class PowerService {
     const OutputPorts: Record<string, number> = {}
 
     for (let i = 1; i <= 6; i++) {
-      const key = `out${i}` as keyof Power
+      const key = `out${i}` as keyof Output
       const value = latest[key]
       if (typeof value === 'number') {
         OutputPorts[String(i)] = value
@@ -65,8 +70,8 @@ export class PowerService {
   }
 
 
-  async getAll(): Promise<Power[]> {
-    return this.powerRepository.find({
+  async getAll(): Promise<Input[]> {
+    return this.inputRepository.find({
       order: { id: 'DESC' },
     })
   }
