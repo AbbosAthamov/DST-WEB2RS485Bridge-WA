@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Req } from '@nestjs/common'
 import { PowerService } from './power.service'
-import { Power } from './power.entity'
+import { Input } from './power.entity'
+import { Output } from './power.entity'
 import * as moment from 'moment'
 import { Stats } from 'fs'
 
