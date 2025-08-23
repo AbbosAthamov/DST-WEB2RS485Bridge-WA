@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common'
 import { PowerController } from './power.controller'
 import { PowerService } from './power.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { Power } from './power.entity'
-
-
+import { Input } from './input.entity'
+import { Output } from './output.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Power])],
+  imports: [TypeOrmModule.forFeature([Input, Output])], // регистрируем обе сущности
   controllers: [PowerController],
   providers: [PowerService],
 })

@@ -52,7 +52,7 @@ export class PowerController {
   async postOutputs(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
 
-    const data: Partial<Power> = {
+    const data: Partial<Output> = {
       ip: req.ip,
     }
 
@@ -74,7 +74,7 @@ export class PowerController {
   async postInputs(@Req() req): Promise<object> {
     console.log(moment().utcOffset('+0500'), req.path, req.method, req.ip, req.body)
 
-    const data: Partial<Power> = {
+    const data: Partial<Input> = {
       ip: req.ip,
     }
 
