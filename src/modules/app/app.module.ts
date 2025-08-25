@@ -3,7 +3,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { PowerModule } from '../power/power.module'
 import { TypeOrmModule } from '@nestjs/typeorm'
-// import { Power } from './power.entity'
+import { AuthModule } from '../auth/auth.module'
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm'
       synchronize: true,
     }),
     PowerModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

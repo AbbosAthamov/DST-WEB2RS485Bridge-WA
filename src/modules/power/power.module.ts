@@ -4,10 +4,15 @@ import { PowerService } from './power.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { Input } from './power.entity'
 import { Output } from './power.entity'
+import { AuthModule } from '../auth/auth.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Input, Output])], // регистрируем обе сущности
+  imports: [
+    TypeOrmModule.forFeature([Input, Output]),
+    AuthModule,
+  ],
   controllers: [PowerController],
   providers: [PowerService],
 })
 export class PowerModule {}
+

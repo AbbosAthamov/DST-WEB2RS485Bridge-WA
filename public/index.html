@@ -2,108 +2,111 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Toggle Control Panel</title>
+  <title>Authorization</title>
   <style>
-    .toggle, .indicator {
-      display: inline-block;
-      margin: 10px;
-      padding: 10px 20px;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    .form-box {
+      width: 300px;
+      margin: auto;
+      padding: 20px;
       border: 1px solid #ccc;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    .form-box h2 {
+      text-align: center;
+    }
+    .form-box input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border: 1px solid #bbb;
       border-radius: 5px;
     }
-
-    .active {
-      background-color: lightgreen;
+    .form-box button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+      background: steelblue;
+      color: white;
+      cursor: pointer;
     }
-
-    .indicator {
-      background-color: #f2f2f2;
+    .form-box button:hover {
+      background: dodgerblue;
     }
-
-    .indicator.active {
-      background-color: lightskyblue;
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+      color: darkgreen;
+    }
+    .error {
+      color: darkred;
     }
   </style>
 </head>
 <body>
-  <h1>Control Panel</h1>
-
-  <h2>Outputs</h2>
-  <div id="toggles">
-    <button class="toggle" id="out1" onclick="toggle(1)">OUT 1</button>
-    <button class="toggle" id="out2" onclick="toggle(2)">OUT 2</button>
-    <button class="toggle" id="out3" onclick="toggle(3)">OUT 3</button>
-    <button class="toggle" id="out4" onclick="toggle(4)">OUT 4</button>
-    <button class="toggle" id="out5" onclick="toggle(5)">OUT 5</button>
-    <button class="toggle" id="out6" onclick="toggle(6)">OUT 6</button>
-  </div>
-
-  <h2>Inputs</h2>
-  <div id="inputs">
-    <div class="indicator" id="in1">IN 1</div>
-    <div class="indicator" id="in2">IN 2</div>
-    <div class="indicator" id="in3">IN 3</div>
-    <div class="indicator" id="in4">IN 4</div>
-    <div class="indicator" id="in5">IN 5</div>
-    <div class="indicator" id="in6">IN 6</div>
+  <div class="form-box">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+    <button onclick="register()">Register</button>
+    <div id="message" class="message"></div>
   </div>
 
   <script>
-    let outputPorts = {}
+    const API = 'http://94.158.53.18:4480'
 
-    // === Переключение кнопок ===
-    function toggle(index) {
-      const key = String(index)
-      const button = document.getElementById(`out${key}`)
+    function login() {
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
 
-      outputPorts[key] = outputPorts[key] === 1 ? 0 : 1
-      button.classList.toggle('active', outputPorts[key] === 1)
-
-      fetch('http://94.158.53.18:4480/power/outputs', {
+      fetch(`${API}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ OutputPorts: outputPorts })
+        body: JSON.stringify({ email, password })
       })
-      .then(res => res.json())
-      .then(data => console.log('POST success:', data))
-      .catch(err => console.error('POST error:', err))
+      .then(res => {
+        if (!res.ok) throw new Error('Login failed')
+        return res.json()
+      })
+      .then(data => {
+        localStorage.setItem('token', data.access_token)
+        showMessage('Login successful!', false)
+        // редирект на панель управления
+        setTimeout(() => window.location.href = 'panel.html', 1000)
+      })
+      .catch(err => showMessage(err.message, true))
     }
 
-    // === Получаем inputs с сервера ===
-    function updateInputs() {
-      fetch('http://94.158.53.18:4480/power/inputs')
-        .then(res => res.json())
-        .then(data => {
-          const inputs = data.InputPorts || {}
-          for (let i = 1; i <= 6; i++) {
-            const indicator = document.getElementById(`in${i}`)
-            const value = inputs[String(i)]
-            indicator.classList.toggle('active', value === 1)
-          }
-        })
-        .catch(err => console.error('Inputs fetch error:', err))
+    function register() {
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+
+      fetch(`${API}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Register failed')
+        return res.json()
+      })
+      .then(() => showMessage('Register successful! Now login.', false))
+      .catch(err => showMessage(err.message, true))
     }
 
-    // === Получаем outputs с сервера ===
-    function updateOutputs() {
-      fetch('http://94.158.53.18:4480/power/outputs')
-        .then(res => res.json())
-        .then(data => {
-          outputPorts = data.OutputPorts || {}
-          for (let i = 1; i <= 6; i++) {
-            const button = document.getElementById(`out${i}`)
-            const value = outputPorts[String(i)]
-            button.classList.toggle('active', value === 1)
-          }
-        })
-        .catch(err => console.error('Outputs fetch error:', err))
+    function showMessage(msg, isError) {
+      const div = document.getElementById('message')
+      div.textContent = msg
+      div.className = isError ? 'message error' : 'message'
     }
-
-    // === Стартуем синхронизацию ===
-    updateInputs()
-    updateOutputs()
-    setInterval(updateInputs, 1000)
-    setInterval(updateOutputs, 2000)
   </script>
 </body>
 </html>
